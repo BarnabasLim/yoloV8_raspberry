@@ -50,7 +50,7 @@ while True:
         dataController=None
         dataController=DataController(True, False, True)
     else:
-        dataController.step(detected_item, img=img)
+        dataController.step(detected_item, img=im)
     
     if(cv2.waitKey(25) & 0xFF == ord("q")):
         if(dataController!=None):

@@ -4,6 +4,7 @@ import time
 import cv2
 import os
 from service.telegramBot import TelegramBot
+from utils.utils import cat
 
 class DataController:
 	def __init__(self, telegram=False, wifibroadcast=False, debug=False ):
@@ -32,18 +33,22 @@ class DataController:
 		del self.max_captured_stuff
 	
 	def step(self, detected_obj, img):
-		if(len(self.telegramBot.imgList)<5):
-			self.update_max_captured_stuff_obj(detected_obj)
-			self.update_text()
-			self.update_img_path()
-			if not cv2.imwrite(self.img_path, img):
-				raise Exception("Could not write image")
+		if(sum(detected_obj.values())>0):
+			if(len(self.telegramBot.imgList)<5):
+				img=img*255
+				self.update_max_captured_stuff_obj(detected_obj)
+				self.update_text()
+				self.update_img_path()
+				if not cv2.imwrite(self.img_path, img):
+					raise Exception("Could not write image")
+				
+				cat(self.img_path)
+				if(self.telegramBot):
+					self.telegramBot.addImg(img_path=self.img_path, text=self.text)
+				os.remove(self.img_path)
+			else:
+				self.step_end()
 		
-			if(self.telegramBot):
-				self.telegramBot.addImg(img_path=self.img_path, text=self.text)
-			os.remove(self.img_path)
-		else:
-			self.step_end()
 	def step_end(self):
 		self.telegramBot.sendImgList()
 	

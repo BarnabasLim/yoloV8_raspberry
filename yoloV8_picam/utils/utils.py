@@ -12,3 +12,14 @@ def detect_count(results, debug_mode=False):
     if(debug_mode):
         print(detected_item)
     return detected_item
+    
+def cat(file_path):
+    print(file_path)
+    try: 
+        with open(file_path,'rb') as file:
+            content=file.read()
+            print(f"image_file: {file_path}")
+            print(content)
+            print(type(content))
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
