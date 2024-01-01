@@ -37,15 +37,16 @@ class DataController:
 			if(len(self.telegramBot.imgList)<5):
 				img=img*255
 				self.update_max_captured_stuff_obj(detected_obj)
-				self.update_text()
-				self.update_img_path()
-				if not cv2.imwrite(self.img_path, img):
-					raise Exception("Could not write image")
 				
-				cat(self.img_path)
-				if(self.telegramBot):
-					self.telegramBot.addImg(img_path=self.img_path, text=self.text)
-				os.remove(self.img_path)
+				if(sum(self.max_captured_stuff.values())>0):
+					self.update_text()
+					self.update_img_path()
+					if not cv2.imwrite(self.img_path, img):
+						raise Exception("Could not write image")
+					cat(self.img_path)
+					if(self.telegramBot):
+						self.telegramBot.addImg(img_path=self.img_path, text=self.text)
+					os.remove(self.img_path)
 			else:
 				self.step_end()
 		
