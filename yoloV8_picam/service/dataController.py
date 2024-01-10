@@ -32,12 +32,22 @@ class DataController:
 	def __del__(self):
 		del self.max_captured_stuff
 	
+	def step_start(self, img):
+		img=img*255
+		self.update_img_path()
+		if not cv2.imwrite(self.img_path, img):
+			raise Exception("Could not write image")
+		cat(self.img_path)
+		if(self.telegramBot):
+			self.telegramBot.addImg(img_path=self.img_path, text="motion detected")
+		os.remove(self.img_path)
+		
+	
 	def step(self, detected_obj, img):
 		if(sum(detected_obj.values())>0):
 			if(len(self.telegramBot.imgList)<5):
 				img=img*255
 				self.update_max_captured_stuff_obj(detected_obj)
-				
 				if(sum(self.max_captured_stuff.values())>0):
 					self.update_text()
 					self.update_img_path()
@@ -47,8 +57,11 @@ class DataController:
 					if(self.telegramBot):
 						self.telegramBot.addImg(img_path=self.img_path, text=self.text)
 					os.remove(self.img_path)
+					return True
+					
 			else:
 				self.step_end()
+		return False
 		
 	def step_end(self):
 		self.telegramBot.sendImgList()
